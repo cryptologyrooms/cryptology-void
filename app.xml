@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<board type="Arduino Nano" name="app">
+    <info>
+        A puzzle based on hitting several targets within a certain time interval
+    </info>
+
+    <devices>
+        <device name="Input0" type="Debounced Input">
+            <setting id="pin" name="Input" value="6"/>
+            <setting id="debounce_time" value="50"/>
+            <setting id="pullup" value="true"/>
+        </device>
+
+        <device name="Input1" type="Debounced Input">
+            <setting id="pin" name="Input" value="7"/>
+            <setting id="debounce_time" value="50"/>
+            <setting id="pullup" value="true"/>
+        </device>
+
+        <device name="Input2" type="Debounced Input">
+            <setting id="pin" name="Input" value="8"/>
+            <setting id="debounce_time" value="50"/>
+            <setting id="pullup" value="true"/>
+        </device>
+
+        <device name="Input3" type="Debounced Input">
+            <setting id="pin" name="Input" value="9"/>
+            <setting id="debounce_time" value="50"/>
+            <setting id="pullup" value="true"/>
+        </device>
+
+        <device name="Input4" type="Debounced Input">
+            <setting id="pin" name="Input" value="10"/>
+            <setting id="debounce_time" value="50"/>
+            <setting id="pullup" value="true"/>
+        </device>
+
+        <device name="NeoPixels" type="Adafruit NeoPixel">
+            <setting id="pin" value="5"/>
+            <setting id="npixels" value="26"/>
+        </device>
+
+        <device name="Time Selector" type="Analog Input">
+            <setting id="pin" value="A0"/>
+        </device>
+
+        <device name="Onboard LED" type="Timed OnOff">
+            <setting id="pin" name="LED" value="13"/>
+            <setting id="ontime" value="500"/>
+            <setting id="offtime" value="500"/>
+        </device>
+    </devices>
+
+    <parameters>
+        <parameter name="Seconds per Step" type="Integer">
+            <setting id="init_value" value="1"/>
+            <setting id="use_eeprom" value="true"/>
+        </parameter>
+
+        <parameter name="Max Brightness" type="RGB">
+            <setting id="limit" value="255"/>
+            <setting id="clip" value="true"/>
+            <setting id="r_default" value="255"/>
+            <setting id="g_default" value="255"/>
+            <setting id="b_default" value="255"/>
+            <setting id="use_eeprom" value="true"/>
+        </parameter>
+
+        <parameter name="Finish Colour" type="RGB">
+            <setting id="limit" value="255"/>
+            <setting id="clip" value="true"/>
+            <setting id="r_default" value="60"/>
+            <setting id="g_default" value="120"/>
+            <setting id="b_default" value="20"/>
+            <setting id="use_eeprom" value="true"/>
+        </parameter>
+
+    </parameters>
+
+    <modules>
+        <module>Task</module>
+    </modules>
+    
+    <custom_code>
+        <file>application.cpp</file>
+    </custom_code>
+
+    <logging>
+        <log_module>APPLICATION</log_module>
+    </logging>
+
+    <adl protocol="url"></adl>
+
+</board>
