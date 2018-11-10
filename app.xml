@@ -85,6 +85,8 @@
     
     <custom_code>
         <file>application.cpp</file>
+        <file>display.cpp</file>
+        <file>display.h</file>
     </custom_code>
 
     <logging>

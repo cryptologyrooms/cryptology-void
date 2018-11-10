@@ -19,6 +19,10 @@
 #include "debounced-input.h"
 #include "grid-indexer.h"
 
+/* Application Includes */
+
+#include "display.h"
+
 /* Defines, typedefs, constants */
 
 static const uint8_t RELAY_PIN = 2;
