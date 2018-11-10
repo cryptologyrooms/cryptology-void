@@ -17,6 +17,7 @@
 #include "integer-param.h"
 #include "rgb-param.h"
 #include "debounced-input.h"
+#include "grid-indexer.h"
 
 /* Defines, typedefs, constants */
 
@@ -35,18 +36,9 @@ static AnalogInput * s_pReloadInput = NULL;
 static RGBParam * s_pRGB = NULL;
 static RGBParam * s_pFinishRGB = NULL;
 
+static GridIndexer s_indexer = GridIndexer(5);
+
 /* Private Functions */
-
-static uint8_t map_led_to_actual(uint8_t led)
-{
-    uint8_t nstrip = led / 5;
-
-    if (nstrip & 1)
-    {
-        led = (5*((2*nstrip)+1))-led-1;
-    }
-    return led;
-}
 
 static int32_t get_reload_ticks()
 {
@@ -60,6 +52,38 @@ static int32_t get_reload_ticks()
     return nintervals * 50;
 }
 
+static void update_strip(uint8_t substrip, uint8_t * pRGB)
+{
+    uint32_t per_led_countdown_interval;
+    uint32_t partial_countdown;
+    uint32_t full_led_countdown_base;
+
+    per_led_countdown_interval = s_countdown_start[substrip] / 5;
+
+    const uint8_t n_full_leds = (s_countdown[substrip] * 5) / s_countdown_start[substrip];
+    const uint8_t npartial_led = n_full_leds + 1;
+    full_led_countdown_base = (s_countdown_start[substrip] * n_full_leds) / 5;
+    uint8_t n_led_start = (substrip * 5);
+    uint8_t actual_led_idx = 0;
+
+    for (uint8_t led=0; led<n_full_leds; led++)
+    {
+        actual_led_idx = s_indexer.get(n_led_start+led);
+        s_pNeopixels->setPixelColor(actual_led_idx, pRGB[0], pRGB[1], pRGB[2]);
+    }
+
+    if (npartial_led < 5)
+    {
+        partial_countdown = s_countdown[substrip] - (per_led_countdown_interval * n_full_leds);
+        actual_led_idx = s_indexer.get(n_led_start+npartial_led);
+        s_pNeopixels->setPixelColor(actual_led_idx,
+            (pRGB[0]*partial_countdown)/per_led_countdown_interval,
+            (pRGB[0]*partial_countdown)/per_led_countdown_interval,
+            (pRGB[0]*partial_countdown)/per_led_countdown_interval
+        );
+    }
+}
+
 static void update_display()
 {
     uint8_t rgb[3];
@@ -67,38 +91,11 @@ static void update_display()
     rgb[1] = s_pRGB->get(eG);
     rgb[2] = s_pRGB->get(eB);
 
-    uint32_t per_led_countdown_interval;
-    uint32_t partial_countdown;
-    uint32_t full_led_countdown_base;
-
     for (uint8_t substrip=0; substrip<5; substrip++)
-    {  
-        per_led_countdown_interval = s_countdown_start[substrip] / 5;
-
+    {
         if (s_countdown[substrip])
         {
-            const uint8_t n_full_leds = (s_countdown[substrip] * 5) / s_countdown_start[substrip];
-            const uint8_t npartial_led = n_full_leds + 1;
-            full_led_countdown_base = (s_countdown_start[substrip] * n_full_leds) / 5;
-            uint8_t n_led_start = (substrip * 5);
-            uint8_t actual_led_idx = 0;
-
-            for (uint8_t led=0; led<n_full_leds; led++)
-            {
-                actual_led_idx = map_led_to_actual(n_led_start+led);
-                s_pNeopixels->setPixelColor(actual_led_idx, rgb[0], rgb[1], rgb[2]);
-            }
-
-            if (npartial_led < 5)
-            {
-                partial_countdown = s_countdown[substrip] - (per_led_countdown_interval * n_full_leds);
-                actual_led_idx = map_led_to_actual(n_led_start+npartial_led);
-                s_pNeopixels->setPixelColor(actual_led_idx,
-                    (rgb[0]*partial_countdown)/per_led_countdown_interval,
-                    (rgb[0]*partial_countdown)/per_led_countdown_interval,
-                    (rgb[0]*partial_countdown)/per_led_countdown_interval
-                );
-            }
+            update_strip(substrip, rgb);
         }
     }
     s_pNeopixels->show();

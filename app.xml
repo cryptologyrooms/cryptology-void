@@ -80,6 +80,7 @@
 
     <modules>
         <module>Task</module>
+        <module>Grid Indexer</module>
     </modules>
     
     <custom_code>
