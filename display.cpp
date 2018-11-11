@@ -58,121 +58,120 @@ class DisplayTest : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(DisplayTest);
     
-    CPPUNIT_TEST(testGetAllCountdownZero);
-    CPPUNIT_TEST(testGetAllCountdownPartialPixelZero);
-    CPPUNIT_TEST(testGetAllCountdownCompletePixelZero);
-    CPPUNIT_TEST(testGetAllCountdownPartialPixelOne);
-    CPPUNIT_TEST(testGetAllCountdownFullPixelOne);
-    CPPUNIT_TEST(testGetAllCountdownPartialPixelFour);
-    CPPUNIT_TEST(testGetAllCountdownFullPixelFour);
+    CPPUNIT_TEST(testGetRGBForCountdownZero);
+    CPPUNIT_TEST(testGetRGBForCountdownPartialPixelZero);
+    CPPUNIT_TEST(testGetRGBForCountdownCompletePixelZero);
+    CPPUNIT_TEST(testGetRGBForCountdownPartialPixelOne);
+    CPPUNIT_TEST(testGetRGBForCountdownFullPixelOne);
+    CPPUNIT_TEST(testGetRGBForCountdownPartialPixelFour);
+    CPPUNIT_TEST(testGetRGBForCountdownFullPixelFour);
 
     CPPUNIT_TEST_SUITE_END();
  
-    void testGetAllCountdownZero()
+    void testGetRGBForCountdownZero()
     {
         uint8_t rgb[3] = {0,0,0};
-        get_rgb_value(0, 0, 15000, rgb, RGB);
+        get_rgb_value(0, 0, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(1, 0, 15000, rgb, RGB);
+        get_rgb_value(1, 0, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(2, 0, 15000, rgb, RGB);
+        get_rgb_value(2, 0, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(3, 0, 15000, rgb, RGB);
+        get_rgb_value(3, 0, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(4, 0, 15000, rgb, RGB);
+        get_rgb_value(4, 0, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
     }
 
-    void testGetAllCountdownPartialPixelZero()
+    void testGetRGBForCountdownPartialPixelZero()
     {
         uint8_t rgb[3] = {0,0,0};
-        get_rgb_value(0, 1500, 15000, rgb, RGB);
+        get_rgb_value(0, 1500, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(127, 127, 127, rgb);
-        get_rgb_value(1, 1500, 15000, rgb, RGB);
+        get_rgb_value(1, 1500, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(2, 1500, 15000, rgb, RGB);
+        get_rgb_value(2, 1500, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(3, 1500, 15000, rgb, RGB);
+        get_rgb_value(3, 1500, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(4, 1500, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(0, 0, 0, rgb);
-    }
-
-    void testGetAllCountdownCompletePixelZero()
-    {
-        uint8_t rgb[3] = {0,0,0};
-        get_rgb_value(0, 3000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(1, 3000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(2, 3000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(3, 3000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(4, 3000, 15000, rgb, RGB);
+        get_rgb_value(4, 1500, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
     }
 
-    void testGetAllCountdownPartialPixelOne()
+    void testGetRGBForCountdownCompletePixelZero()
     {
         uint8_t rgb[3] = {0,0,0};
-        get_rgb_value(0, 4500, 15000, rgb, RGB);
+        get_rgb_value(0, 3002, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(1, 4500, 15000, rgb, RGB);
+        get_rgb_value(1, 3002, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(0, 0, 0, rgb);
+        get_rgb_value(2, 3002, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(0, 0, 0, rgb);
+        get_rgb_value(3, 3002, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(0, 0, 0, rgb);
+        get_rgb_value(4, 3002, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(0, 0, 0, rgb);
+    }
+
+    void testGetRGBForCountdownPartialPixelOne()
+    {
+        uint8_t rgb[3] = {0,0,0};
+        get_rgb_value(0, 4503, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(255, 255, 255, rgb);
+        get_rgb_value(1, 4503, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(127, 127, 127, rgb);
-        get_rgb_value(2, 4500, 15000, rgb, RGB);
+        get_rgb_value(2, 4503, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(3, 4500, 15000, rgb, RGB);
+        get_rgb_value(3, 4503, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(4, 4500, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(0, 0, 0, rgb);
-    }
-
-    void testGetAllCountdownFullPixelOne()
-    {
-        uint8_t rgb[3] = {0,0,0};
-        get_rgb_value(0, 6000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(1, 6000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(2, 6000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(3, 6000, 15000, rgb, RGB);
-        CHECK_RGB_EQUAL(0, 0, 0, rgb);
-        get_rgb_value(4, 6000, 15000, rgb, RGB);
+        get_rgb_value(4, 4503, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(0, 0, 0, rgb);
     }
 
-    void testGetAllCountdownPartialPixelFour()
+    void testGetRGBForCountdownFullPixelOne()
     {
         uint8_t rgb[3] = {0,0,0};
-        get_rgb_value(0, 14000, 15000, rgb, RGB);
+        get_rgb_value(0, 6004, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(1, 14000, 15000, rgb, RGB);
+        get_rgb_value(1, 6004, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(2, 14000, 15000, rgb, RGB);
+        get_rgb_value(2, 6004, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(0, 0, 0, rgb);
+        get_rgb_value(3, 6004, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(0, 0, 0, rgb);
+        get_rgb_value(4, 6004, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(0, 0, 0, rgb);
+    }
+
+    void testGetRGBForCountdownPartialPixelFour()
+    {
+        uint8_t rgb[3] = {0,0,0};
+        get_rgb_value(0, 14012, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(3, 14000, 15000, rgb, RGB);
+        get_rgb_value(1, 14012, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(4, 14000, 15000, rgb, RGB);
+        get_rgb_value(2, 14012, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(255, 255, 255, rgb);
+        get_rgb_value(3, 14012, 15013, rgb, RGB);
+        CHECK_RGB_EQUAL(255, 255, 255, rgb);
+        get_rgb_value(4, 14012, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(170, 170, 170, rgb);
     }
 
-    void testGetAllCountdownFullPixelFour()
+    void testGetRGBForCountdownFullPixelFour()
     {
         uint8_t rgb[3] = {0,0,0};
-        get_rgb_value(0, 15000, 15000, rgb, RGB);
+        get_rgb_value(0, 15013, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(1, 15000, 15000, rgb, RGB);
+        get_rgb_value(1, 15013, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(2, 15000, 15000, rgb, RGB);
+        get_rgb_value(2, 15013, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(3, 15000, 15000, rgb, RGB);
+        get_rgb_value(3, 15013, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
-        get_rgb_value(4, 15000, 15000, rgb, RGB);
+        get_rgb_value(4, 15013, 15013, rgb, RGB);
         CHECK_RGB_EQUAL(255, 255, 255, rgb);
     }
-
 };
 
 
