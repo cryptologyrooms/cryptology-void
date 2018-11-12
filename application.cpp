@@ -47,15 +47,15 @@ static GridIndexer s_indexer = GridIndexer(5);
 
 static int32_t get_reload_ticks()
 {
-    int32_t reload_ms = ((s_pReloadInput->reading() * 12) / 1023) + 1;
+    int32_t reload_ms = (((1023 - s_pReloadInput->reading()) * 12) / 1023) + 1;
     reload_ms *= s_pReloadInterval->get();
     if (reload_ms < 1)
     {
-        adl_logln(LOG_APP, "Invalid reload %d", reload_ms);
+        adl_logln(LOG_APP, "Invalid reload %" PRId32, reload_ms);
         reload_ms = 1000;
     }
     reload_ms = (reload_ms / COUNTDOWN_TICK_MS) * COUNTDOWN_TICK_MS;
-    adl_logln(LOG_APP, "Reload: %d", reload_ms);
+    adl_logln(LOG_APP, "Reload: %" PRId32, reload_ms);
     return reload_ms;
 }
 
@@ -66,7 +66,7 @@ static void update_strip(uint8_t substrip, uint8_t const * const pFullRGB)
 
     for (uint8_t i=0; i<5;i++)
     {
-        get_rgb_value(i, s_countdown_ms[i], s_countdown_ms_start[i], rgb, pFullRGB);
+        get_rgb_value(i, s_countdown_ms[substrip], s_countdown_ms_start[substrip], rgb, pFullRGB);
         s_pNeopixels->setPixelColor(s_indexer.get(n_led_start+i), rgb[0], rgb[1], rgb[2]);
     }
 }
@@ -146,6 +146,12 @@ static void play_intro()
     }
 }
 
+static void finish_game()
+{
+    digitalWrite(RELAY_PIN, HIGH);
+    s_pNeopixels->set_pixels(0,25, s_pFinishRGB->get(eR), s_pFinishRGB->get(eG), s_pFinishRGB->get(eB));
+}
+
 /* ADL Functions */
 
 void adl_custom_setup(DeviceBase * pdevices[], int ndevices, ParameterBase * pparams[], int nparams)
@@ -165,6 +171,7 @@ void adl_custom_setup(DeviceBase * pdevices[], int ndevices, ParameterBase * ppa
     s_pFinishRGB = (RGBParam*)pparams[2];
 
     pinMode(RELAY_PIN, OUTPUT);
+    digitalWrite(RELAY_PIN, LOW);
 
     countdown_task.start();
     play_intro();
@@ -203,6 +210,8 @@ void adl_custom_loop(DeviceBase * pdevices[], int ndevices, ParameterBase * ppar
         countdown_task.run();
         debug_task.run();
     }
-    
-    digitalWrite(RELAY_PIN, s_game_running ? LOW : HIGH);
+    else
+    {
+        finish_game();
+    }
 }

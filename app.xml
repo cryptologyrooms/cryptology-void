@@ -47,7 +47,7 @@
         </device>
 
         <device name="Time Selector" type="Analog Input">
-            <setting id="pin" value="A0"/>
+            <setting id="pin" value="A7"/>
         </device>
 
         <device name="Onboard LED" type="Timed OnOff">
