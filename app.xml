@@ -8,32 +8,37 @@
     <devices>
         <device name="Input0" type="Debounced Input">
             <setting id="pin" name="Input" value="6"/>
-            <setting id="debounce_time" value="50"/>
-            <setting id="pullup" value="true"/>
+            <setting id="debounce_time" value="20"/>
+            <setting id="pullup" value="false"/>
+            <setting id="invert" value="false"/>
         </device>
 
         <device name="Input1" type="Debounced Input">
             <setting id="pin" name="Input" value="7"/>
-            <setting id="debounce_time" value="50"/>
-            <setting id="pullup" value="true"/>
+            <setting id="debounce_time" value="20"/>
+            <setting id="pullup" value="false"/>
+            <setting id="invert" value="false"/>
         </device>
 
         <device name="Input2" type="Debounced Input">
             <setting id="pin" name="Input" value="8"/>
-            <setting id="debounce_time" value="50"/>
-            <setting id="pullup" value="true"/>
+            <setting id="debounce_time" value="20"/>
+            <setting id="pullup" value="false"/>
+            <setting id="invert" value="false"/>
         </device>
 
         <device name="Input3" type="Debounced Input">
             <setting id="pin" name="Input" value="9"/>
-            <setting id="debounce_time" value="50"/>
-            <setting id="pullup" value="true"/>
+            <setting id="debounce_time" value="20"/>
+            <setting id="pullup" value="false"/>
+            <setting id="invert" value="false"/>
         </device>
 
         <device name="Input4" type="Debounced Input">
             <setting id="pin" name="Input" value="10"/>
-            <setting id="debounce_time" value="50"/>
-            <setting id="pullup" value="true"/>
+            <setting id="debounce_time" value="20"/>
+            <setting id="pullup" value="false"/>
+            <setting id="invert" value="false"/>
         </device>
 
         <device name="NeoPixels" type="Adafruit NeoPixel">
@@ -93,6 +98,6 @@
         <log_module>APPLICATION</log_module>
     </logging>
 
-    <adl protocol="url"></adl>
+    <adl protocol="url" delay_start_time="3"></adl>
 
 </board>

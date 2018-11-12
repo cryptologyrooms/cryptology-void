@@ -28,13 +28,13 @@
 static const uint8_t RELAY_PIN = 2;
 static bool s_game_running = true;
 
-static const uint8_t INPUT_PINS[] = {3,4,5,6,7};
-
 /* Private Variables */
 static uint32_t s_countdown[] = {0,0,0,0,0};
 static uint32_t s_countdown_start[] = {0,0,0,0,0};
 
 static AdafruitNeoPixelADL * s_pNeopixels = NULL;
+static DebouncedInput * s_pInputs[5] = {NULL};
+
 static IntegerParam * s_pReloadInterval = NULL;
 static AnalogInput * s_pReloadInput = NULL;
 static RGBParam * s_pRGB = NULL;
@@ -53,38 +53,22 @@ static int32_t get_reload_ticks()
         adl_logln(LOG_APP, "Invalid interval %d", nintervals);
         nintervals = 1;
     }
+    else
+    {
+        adl_logln(LOG_APP, "Intervals: %d", nintervals);
+    }
     return nintervals * 50;
 }
 
-static void update_strip(uint8_t substrip, uint8_t * pRGB)
+static void update_strip(uint8_t substrip, uint8_t * pFullRGB)
 {
-    uint32_t per_led_countdown_interval;
-    uint32_t partial_countdown;
-    uint32_t full_led_countdown_base;
+    uint8_t rgb[3];
+    uint8_t n_led_start = substrip * 5;
 
-    per_led_countdown_interval = s_countdown_start[substrip] / 5;
-
-    const uint8_t n_full_leds = (s_countdown[substrip] * 5) / s_countdown_start[substrip];
-    const uint8_t npartial_led = n_full_leds + 1;
-    full_led_countdown_base = (s_countdown_start[substrip] * n_full_leds) / 5;
-    uint8_t n_led_start = (substrip * 5);
-    uint8_t actual_led_idx = 0;
-
-    for (uint8_t led=0; led<n_full_leds; led++)
+    for (uint8_t i=0; i<5;i++)
     {
-        actual_led_idx = s_indexer.get(n_led_start+led);
-        s_pNeopixels->setPixelColor(actual_led_idx, pRGB[0], pRGB[1], pRGB[2]);
-    }
-
-    if (npartial_led < 5)
-    {
-        partial_countdown = s_countdown[substrip] - (per_led_countdown_interval * n_full_leds);
-        actual_led_idx = s_indexer.get(n_led_start+npartial_led);
-        s_pNeopixels->setPixelColor(actual_led_idx,
-            (pRGB[0]*partial_countdown)/per_led_countdown_interval,
-            (pRGB[0]*partial_countdown)/per_led_countdown_interval,
-            (pRGB[0]*partial_countdown)/per_led_countdown_interval
-        );
+        get_rgb_value(i, s_countdown[i], s_countdown_start[i], rgb, pFullRGB);
+        s_pNeopixels->setPixelColor(s_indexer.get(n_led_start+i), rgb[0], rgb[1], rgb[2]);
     }
 }
 
@@ -122,7 +106,7 @@ static void countdown_task_fn(ADLTask& pThisTask, void * pTaskData)
     {
         if (s_countdown[i])
         {
-            s_countdown[i]--;   
+            s_countdown[i]-=20;   
         }
         update |= (s_countdown[i] > 0);
     }
@@ -138,14 +122,42 @@ static void countdown_task_fn(ADLTask& pThisTask, void * pTaskData)
 }
 static ADLTask countdown_task(20, countdown_task_fn, NULL);
 
-/* Local Functions */
+static void debug_task_fn(ADLTask& pThisTask, void * pTaskData)
+{
+    (void)pThisTask;
+    (void)pTaskData;
+    adl_logln(LOG_APP, "Counts: %lu,%lu,%lu,%lu,%lu",
+        s_countdown[0], s_countdown[1],s_countdown[2],s_countdown[3],s_countdown[4]
+    );
+}
+static ADLTask debug_task(1000, debug_task_fn, NULL);
+
+static void play_intro()
+{
+    adl_logln(LOG_APP, "Cryptology Void Puzzle");
+    for (uint8_t i=0; i<5;i++)
+    {
+        s_countdown[i] = 3000;
+        s_countdown_start[i] = 3000;
+    }
+
+    while(s_countdown[0])
+    {
+        countdown_task.run();
+    }
+}
 
 /* ADL Functions */
 
 void adl_custom_setup(DeviceBase * pdevices[], int ndevices, ParameterBase * pparams[], int nparams)
 {
-    (void)pparams; (void)nparams;
+    (void)nparams; (void)ndevices;
 
+    s_pInputs[0] = (DebouncedInput*)pdevices[0];
+    s_pInputs[1] = (DebouncedInput*)pdevices[1];
+    s_pInputs[2] = (DebouncedInput*)pdevices[2];
+    s_pInputs[3] = (DebouncedInput*)pdevices[3];
+    s_pInputs[4] = (DebouncedInput*)pdevices[4];
     s_pNeopixels = (AdafruitNeoPixelADL*)pdevices[5];
     s_pReloadInput = (AnalogInput*)pdevices[6];
 
@@ -156,11 +168,25 @@ void adl_custom_setup(DeviceBase * pdevices[], int ndevices, ParameterBase * ppa
     pinMode(RELAY_PIN, OUTPUT);
 
     countdown_task.start();
+    play_intro();
+
+    for (uint8_t i=0; i<5;i++)
+    {
+        s_countdown[i] = 0;
+        s_countdown_start[i] = get_reload_ticks();
+    }
+
+    update_display();
+
+    for (uint8_t i=0; i<5; i++)
+    {
+        ((DebouncedInput *)(pdevices[i]))->check_high_and_clear();
+    }
 }
 
 void adl_custom_loop(DeviceBase * pdevices[], int ndevices, ParameterBase * pparams[], int nparams)
 {
-    (void)pdevices; (void)ndevices; (void)nparams;
+    (void)pdevices; (void)pparams; (void)ndevices; (void)nparams;
 
     if (s_game_running)
     {
@@ -168,13 +194,15 @@ void adl_custom_loop(DeviceBase * pdevices[], int ndevices, ParameterBase * ppar
 
         for (uint8_t i=0; i<5; i++)
         {
-            if (((DebouncedInput *)(pparams[i]))->check_low_and_clear())
+            if (s_pInputs[i]->check_high_and_clear())
             {
                 s_countdown[i] = s_countdown_start[i] = get_reload_ticks();
+                adl_logln(LOG_APP, "Reload #%d: %" PRIu32, i, s_countdown[i]);
             }
             s_game_running |= (s_countdown[i] == 0);
         }
         countdown_task.run();
+        debug_task.run();
     }
     
     digitalWrite(RELAY_PIN, s_game_running ? LOW : HIGH);
